@@ -74,6 +74,7 @@ define uninitialized `static mut` values.
 #![license = "MIT"]
 
 #![feature(macro_rules)]
+#![no_std]
 
 #[macro_export]
 macro_rules! lazy_static {
@@ -87,6 +88,7 @@ macro_rules! lazy_static {
         lazy_static!(MAKE TY $VIS $N)
         impl Deref<$T> for $N {
             fn deref<'a>(&'a self) -> &'a $T {
+                use std::prelude::*;
                 use std::one::{Once, ONCE_INIT};
                 use std::mem::transmute;
 
