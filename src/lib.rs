@@ -93,9 +93,7 @@ macro_rules! lazy_static {
                 unsafe {
                     use core::mem::transmute;
 
-                    #[inline(always)]
-                    fn require_sync<T: Sync>(_: &T) { }
-
+                    
                     static mut ONCE: bool = false;
                     static mut DATA: *const $T = 0 as *const $T;
         
@@ -105,7 +103,7 @@ macro_rules! lazy_static {
                     }
                     
                     let static_ref = &*DATA;
-                    require_sync(static_ref);
+                    // TODO(ryan): require_sync(static_ref);
                     static_ref
                 }
             }
