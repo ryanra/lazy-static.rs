@@ -67,6 +67,8 @@ put in a heap allocated box, due to the Rust language currently not providing an
 define uninitialized `static mut` values.
 
 */
+#![feature(no_std)]
+#![no_std]
 
 #![crate_type = "dylib"]
 
@@ -83,21 +85,25 @@ macro_rules! lazy_static {
         impl ::std::ops::Deref for $N {
             type Target = $T;
             fn deref<'a>(&'a self) -> &'a $T {
+                use alloc::boxed::Box;
+
                 #[inline(always)]
                 fn __static_ref_initialize() -> Box<$T> { Box::new($e) }
 
                 unsafe {
-                    use std::sync::{Once, ONCE_INIT};
-                    use std::mem::transmute;
+                    use core::mem::transmute;
 
                     #[inline(always)]
                     fn require_sync<T: Sync>(_: &T) { }
 
+                    static mut ONCE: bool = false;
                     static mut DATA: *const $T = 0 as *const $T;
-                    static mut ONCE: Once = ONCE_INIT;
-                    ONCE.call_once(|| {
+        
+                    if !ONCE { // TODO(ryan): race condition
                         DATA = transmute::<Box<$T>, *const $T>(__static_ref_initialize());
-                    });
+                        ONCE = true
+                    }
+                    
                     let static_ref = &*DATA;
                     require_sync(static_ref);
                     static_ref
