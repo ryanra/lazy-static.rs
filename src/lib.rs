@@ -82,7 +82,7 @@ macro_rules! lazy_static {
     };
     ($VIS:ident static ref $N:ident : $T:ty = $e:expr; $($t:tt)*) => {
         lazy_static!(MAKE TY $VIS $N);
-        impl ::std::ops::Deref for $N {
+        impl ::core::ops::Deref for $N {
             type Target = $T;
             fn deref<'a>(&'a self) -> &'a $T {
                 use alloc::boxed::Box;
