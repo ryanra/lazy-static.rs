@@ -24,3 +24,6 @@ keywords = ["macro", "lazy", "static"]
 # crates.io will validate the license provided against a whitelist of known
 # licenses. Multiple licenses can be separated with a `/`
 license = "MIT"
+
+[dependencies.core]
+path = "../rust/cargo/core"
